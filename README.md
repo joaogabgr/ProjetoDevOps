@@ -15,8 +15,6 @@ Dashboards Interativos: O sistema apresentará gráficos e relatórios em tempo 
 
 Geração de Alertas: Implementaremos um sistema de notificações automáticas para eventos meteorológicos críticos, auxiliando na tomada de decisões.
 
-Engajamento Educacional: A plataforma contará com materiais explicativos sobre os conceitos meteorológicos, incentivando a aprendizagem baseada em problemas para estudantes do ensino médio.
-
 <br>
 
 <h2 id='requisitos-funcionais'> Requisitos Funcionais </h2>
@@ -41,10 +39,9 @@ Engajamento Educacional: A plataforma contará com materiais explicativos sobre 
 | Número | Descrição |
 |--------|-----------|
 | RNF1 | O sistema deve ser fácil de usar e visualmente agradável, especialmente nos painéis com os dados das estações. |
-| RNF2 | O sistema deve envolver estudantes do ensino médio com conteúdos educativos claros e interessantes, facilitando o aprendizado. |
-| RNF3 | Toda a comunicação entre a plataforma e as aplicações deve ser bem documentada, com exemplos claros para facilitar futuras integrações. |
-| RNF4 | O sistema deve ter um processo automático que verifique se tudo está funcionando corretamente antes de publicar uma nova versão. |
-| RNF5 | Sempre que houver uma atualização no sistema, ela deve ser publicada automaticamente para que o cliente sempre tenha acesso à versão mais recente, sem precisar esperar ou atualizar manualmente. |
+| RNF2 | Toda a comunicação entre a plataforma e as aplicações deve ser bem documentada, com exemplos claros para facilitar futuras integrações. |
+| RNF3 | O sistema deve ter um processo automático que verifique se tudo está funcionando corretamente antes de publicar uma nova versão. |
+| RNF4 | Sempre que houver uma atualização no sistema, ela deve ser publicada automaticamente para que o cliente sempre tenha acesso à versão mais recente, sem precisar esperar ou atualizar manualmente. |
 
 <br>
 
@@ -63,38 +60,38 @@ Engajamento Educacional: A plataforma contará com materiais explicativos sobre 
   </thead>
   <tbody>
     <tr><td>1</td><td>ALTA</td><td>Como administrador, quero que o sistema suporte um modelo de dados dinâmico e permita o cadastro de estações meteorológicas, garantindo flexibilidade na gestão e registro dessas informações.</td><td>3</td><td>1</td><td>RF1</td></tr>
-    <tr><td>2</td><td>ALTA</td><td>Como administrador, quero cadastrar novos parâmetros meteorológicos para garantir que todas as medições necessárias sejam registradas corretamente.</td><td>3</td><td>1</td><td>RF3</td></tr>
-    <tr><td>3</td><td>ALTA</td><td>Como administrador, quero cadastrar alertas meteorológicos para identificar condições climáticas críticas.</td><td>3</td><td>1</td><td>RF4</td></tr>
-    <tr><td>4</td><td>ALTA</td><td>Como administrador, quero cadastrar novos usuários para que possam acessar o sistema conforme suas permissões.</td><td>3</td><td>1</td><td>RF5</td></tr>
-    <tr><td>5</td><td>ALTA</td><td>Como administrador, quero editar as informações de uma estação meteorológica para manter os dados sempre atualizados.</td><td>3</td><td>1</td><td>RF2</td></tr>
+    <tr><td>2</td><td>ALTA</td><td>Como administrador, quero editar as informações de uma estação meteorológica para manter os dados sempre atualizados.</td><td>3</td><td>1</td><td>RF2</td></tr>
+    <tr><td>3</td><td>ALTA</td><td>Como usuário, quero visualizar uma lista de todas as estações cadastradas no sistema.</td><td>3</td><td>1</td><td>RF2</td></tr>
+    <tr><td>4</td><td>ALTA</td><td>Como administrador, quero excluir estações meteorológicas conforme necessário.</td><td>3</td><td>1</td><td>RF2</td></tr>
+    <tr><td>5</td><td>ALTA</td><td>Como administrador, quero cadastrar novos parâmetros meteorológicos para garantir que todas as medições necessárias sejam registradas corretamente.</td><td>3</td><td>1</td><td>RF3</td></tr>
     <tr><td>6</td><td>ALTA</td><td>Como administrador, quero editar os parâmetros meteorológicos para corrigir informações ou ajustar unidades de medida.</td><td>3</td><td>1</td><td>RF3</td></tr>
-    <tr><td>7</td><td>ALTA</td><td>Como administrador, quero editar alertas meteorológicos para ajustar suas condições de ativação e notificação.</td><td>3</td><td>1</td><td>RF4</td></tr>
-    <tr><td>8</td><td>ALTA</td><td>Como administrador, quero editar as informações de um usuário para corrigir ou alterar permissões.</td><td>3</td><td>1</td><td>RF5</td></tr>
-    <tr><td>9</td><td>ALTA</td><td>Como usuário, quero visualizar uma lista de todas as estações cadastradas no sistema.</td><td>3</td><td>1</td><td>RF2</td></tr>
-    <tr><td>10</td><td>ALTA</td><td>Como administrador, quero visualizar uma lista de parâmetros meteorológicos cadastrados para acompanhar e gerenciar as medições do sistema.</td><td>3</td><td>1</td><td>RF3</td></tr>
-    <tr><td>11</td><td>ALTA</td><td>Como administrador, quero visualizar uma lista de alertas meteorológicos cadastrados para gerenciar notificações de eventos climáticos críticos.</td><td>3</td><td>1</td><td>RF4</td></tr>
-    <tr><td>12</td><td>ALTA</td><td>Como administrador, quero visualizar uma lista de usuários cadastrados para gerenciar acessos e permissões no sistema.</td><td>3</td><td>1</td><td>RF5</td></tr>
-    <tr><td>14</td><td>ALTA</td><td>Como administrador, quero excluir estações meteorológicas conforme necessário.</td><td>3</td><td>1</td><td>RF2</td></tr>
-    <tr><td>15</td><td>ALTA</td><td>Como administrador, quero excluir parâmetros meteorológicos que não sejam mais necessários para manter o sistema organizado.</td><td>3</td><td>1</td><td>RF3</td></tr>
-    <tr><td>16</td><td>ALTA</td><td>Como administrador, quero excluir alertas que não sejam mais necessários para manter o sistema atualizado.</td><td>3</td><td>1</td><td>RF4</td></tr>
-    <tr><td>17</td><td>ALTA</td><td>Como administrador, quero excluir usuários inativos ou desnecessários para manter a base de dados organizada.</td><td>3</td><td>1</td><td>RF5</td></tr>
-    <tr><td>18</td><td>ALTA</td><td>Como administrador, quero controlar o acesso ao sistema definindo permissões para diferentes usuários.</td><td>2</td><td>1</td><td>RF9</td></tr>
-    <tr><td>19</td><td>MÉDIA</td><td>Como sistema, quero emular o recebimento de dados das estações meteorológicas, para que o projeto possa ser desenvolvidos e testados sem equipamentos reais.</td><td>5</td><td>2</td><td>RF6</td></tr>
-    <tr><td>20</td><td>MÉDIA</td><td>Como sistema, quero processar os dados recebidos para calcular médias horárias e diárias.</td><td>8</td><td>2</td><td>RF6</td></tr>
-    <tr><td>21</td><td>MÉDIA</td><td>Como sistema, quero armazenar os dados recebidos de forma otimizada para suportar grandes volumes de informações.</td><td>5</td><td>2</td><td>RF6</td></tr>
-    <tr><td>22</td><td>MÉDIA</td><td>Como administrador, quero acompanhar em tempo real o estado operacional das unidades de coleta, para garantir a continuidade do serviço.</td><td>5</td><td>2</td><td>RF6</td></tr>
-    <tr><td>23</td><td>MÉDIA</td><td>Como usuário, quero receber notificações em caso de eventos meteorológicos extremos.</td><td>3</td><td>2</td><td>RF8</td></tr>
-    <tr><td>24</td><td>MÉDIA</td><td>Como usuário, quero acessar dashboards interativos com os dados coletados pelas estações.</td><td>8</td><td>2</td><td>RF7</td></tr>
-    <tr><td>25</td><td>MÉDIA</td><td>Como usuário, quero filtrar os dados exibidos no dashboard por data, para visualizar informações específicas de um período determinado.</td><td>3</td><td>2</td><td>RF7</td></tr>
-    <tr><td>27</td><td>BAIXA</td><td>Como sistema, quero receber dados em tempo real das estações meteorológicas físicas, substituindo a emulação, para operar em produção.</td><td>8</td><td>3</td><td>RF6</td></tr>
-    <tr><td>28</td><td>BAIXA</td><td>Como administrador, quero monitorar o funcionamento das estações meteorológicas em tempo real.</td><td>8</td><td>3</td><td>RF6</td></tr>
-    <tr><td>30</td><td>BAIXA</td><td>Como administrador, quero gerar relatórios detalhados sobre as condições meteorológicas registradas.</td><td>5</td><td>3</td><td>RF7</td></tr>
-    <tr><td>31</td><td>BAIXA</td><td>Como usuário, quero alterar minha senha para garantir a segurança da minha conta.</td><td>3</td><td>3</td><td>RF5</td></tr>
-    <tr><td>32</td><td>BAIXA</td><td>Como usuário, quero poder recuperar minha senha caso eu a esqueça, para continuar acessando o sistema.</td><td>3</td><td>3</td><td>RF5</td></tr>
-
-
+    <tr><td>7</td><td>ALTA</td><td>Como administrador, quero visualizar uma lista de parâmetros meteorológicos cadastrados para acompanhar e gerenciar as medições do sistema.</td><td>3</td><td>1</td><td>RF3</td></tr>
+    <tr><td>8</td><td>ALTA</td><td>Como administrador, quero excluir parâmetros meteorológicos que não sejam mais necessários para manter o sistema organizado.</td><td>3</td><td>1</td><td>RF3</td></tr>
+    <tr><td>9</td><td>ALTA</td><td>Como administrador, quero cadastrar novos usuários para que possam acessar o sistema conforme suas permissões.</td><td>3</td><td>1</td><td>RF5</td></tr>
+    <tr><td>10</td><td>ALTA</td><td>Como administrador, quero editar as informações de um usuário para corrigir ou alterar permissões.</td><td>3</td><td>1</td><td>RF5</td></tr>
+    <tr><td>11</td><td>ALTA</td><td>Como administrador, quero visualizar uma lista de usuários cadastrados para gerenciar acessos e permissões no sistema.</td><td>3</td><td>1</td><td>RF5</td></tr>
+    <tr><td>12</td><td>ALTA</td><td>Como administrador, quero excluir usuários inativos ou desnecessários para manter a base de dados organizada.</td><td>3</td><td>1</td><td>RF5</td></tr>
+    <tr><td>13</td><td>ALTA</td><td>Como administrador, quero controlar o acesso ao sistema definindo permissões para diferentes usuários.</td><td>2</td><td>1</td><td>RF9</td></tr>
+    <tr><td>14</td><td>MÉDIA</td><td>Como administrador, quero cadastrar alertas meteorológicos para identificar condições climáticas críticas.</td><td>3</td><td>2</td><td>RF4</td></tr>
+    <tr><td>15</td><td>MÉDIA</td><td>Como administrador, quero editar alertas meteorológicos para ajustar suas condições de ativação e notificação.</td><td>3</td><td>2</td><td>RF4</td></tr>
+    <tr><td>16</td><td>MÉDIA</td><td>Como administrador, quero visualizar uma lista de alertas meteorológicos cadastrados para gerenciar notificações de eventos climáticos críticos.</td><td>3</td><td>2</td><td>RF4</td></tr>
+    <tr><td>17</td><td>MÉDIA</td><td>Como administrador, quero excluir alertas que não sejam mais necessários para manter o sistema atualizado.</td><td>3</td><td>2</td><td>RF4</td></tr>
+    <tr><td>18</td><td>MÉDIA</td><td>Como sistema, quero emular o recebimento de dados das estações meteorológicas, para que o projeto possa ser desenvolvidos e testados sem equipamentos reais.</td><td>5</td><td>2</td><td>RF6</td></tr>
+    <tr><td>19</td><td>MÉDIA</td><td>Como sistema, quero processar os dados recebidos para calcular médias horárias e diárias.</td><td>8</td><td>2</td><td>RF6</td></tr>
+    <tr><td>20</td><td>MÉDIA</td><td>Como sistema, quero armazenar os dados recebidos de forma otimizada para suportar grandes volumes de informações.</td><td>5</td><td>2</td><td>RF6</td></tr>
+    <tr><td>21</td><td>MÉDIA</td><td>Como administrador, quero acompanhar em tempo real o estado operacional das unidades de coleta, para garantir a continuidade do serviço.</td><td>5</td><td>2</td><td>RF6</td></tr>
+    <tr><td>22</td><td>MÉDIA</td><td>Como usuário, quero receber notificações em caso de eventos meteorológicos extremos.</td><td>3</td><td>2</td><td>RF8</td></tr>
+    <tr><td>23</td><td>BAIXA</td><td>Como usuário, quero acessar dashboards interativos com os dados coletados pelas estações.</td><td>8</td><td>3</td><td>RF7</td></tr>
+    <tr><td>24</td><td>BAIXA</td><td>Como usuário, quero filtrar os dados exibidos no dashboard por data, para visualizar informações específicas de um período determinado.</td><td>3</td><td>3</td><td>RF7</td></tr>
+    <tr><td>25</td><td>BAIXA</td><td>Como administrador, quero gerar relatórios detalhados sobre as condições meteorológicas registradas.</td><td>5</td><td>3</td><td>RF7</td></tr>
+    <tr><td>26</td><td>BAIXA</td><td>Como sistema, quero receber dados em tempo real das estações meteorológicas físicas, substituindo a emulação, para operar em produção.</td><td>8</td><td>3</td><td>RF6</td></tr>
+    <tr><td>27</td><td>BAIXA</td><td>Como administrador, quero monitorar o funcionamento das estações meteorológicas em tempo real.</td><td>8</td><td>3</td><td>RF6</td></tr>
+    <tr><td>28</td><td>BAIXA</td><td>Como usuário, quero alterar minha senha para garantir a segurança da minha conta.</td><td>3</td><td>3</td><td>RF5</td></tr>
+    <tr><td>29</td><td>BAIXA</td><td>Como usuário, quero poder recuperar minha senha caso eu a esqueça, para continuar acessando o sistema.</td><td>3</td><td>3</td><td>RF5</td></tr>
   </tbody>
 </table>
+
+<b>Distribuição de pontos:</b> Sprint 1 = 38 | Sprint 2 = 38 | Sprint 3 = 38 (total 114)
 
 
 
