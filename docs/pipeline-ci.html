@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pipeline do Back-end</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: mapa de branches no topo, depois uma faixa por etapa com trilho vertical de steps (ordem = execução) */
+:root {
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --fg: #152031;
+  --muted: #586579;
+  --line: #d6dce5;
+  --feature: #6a55c4;
+  --develop: #2360c4;
+  --homolog: #a96d12;
+  --main: #1b7f52;
+  --gate: #bd3b26;
+  --jira: #2360c4;
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a; --surface: #151c26; --fg: #e5eaf1; --muted: #97a2b2; --line: #283241;
+    --feature: #a793ef; --develop: #6b9ff0; --homolog: #e2a845; --main: #4cc38a; --gate: #f07b64; --jira: #6b9ff0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a; --surface: #151c26; --fg: #e5eaf1; --muted: #97a2b2; --line: #283241;
+  --feature: #a793ef; --develop: #6b9ff0; --homolog: #e2a845; --main: #4cc38a; --gate: #f07b64; --jira: #6b9ff0;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 15px/1.55 var(--font-body);
+  padding-inline: 16px; padding-block: 32px 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 40px; }
+
+header { display: grid; gap: 10px; }
+.eyebrow { font: 600 12px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--font-display); font-stretch: 85%; font-weight: 800; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; margin: 0; text-wrap: balance; }
+.lede { max-width: 68ch; color: var(--muted); margin: 0; }
+.stack { display: flex; flex-wrap: wrap; gap: 6px; }
+.stack span { font: 12px/1 var(--font-mono); border: 1px solid var(--line); border-radius: 4px; padding: 6px 8px; color: var(--muted); background: var(--surface); }
+
+h2 { font-family: var(--font-display); font-stretch: 90%; font-weight: 700; font-size: 22px; margin: 0; text-wrap: balance; }
+
+/* Mapa */
+.map { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 12px; }
+.map-scroll { overflow-x: auto; }
+.map svg { display: block; width: 100%; min-width: 760px; height: auto; }
+.map text { font-family: var(--font-body); }
+.t-mono { font-family: var(--font-mono) !important; }
+
+/* Legenda */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.chip { display: inline-flex; align-items: center; gap: 5px; font: 600 11px/1 var(--font-mono); letter-spacing: .04em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; border: 1px solid currentColor; white-space: nowrap; }
+.k-ci { color: var(--develop); }
+.k-gate { color: var(--gate); }
+.k-cd { color: var(--main); }
+.k-trace { color: var(--feature); }
+.ref { font: 12px/1 var(--font-mono); color: var(--muted); background: var(--bg); border-radius: 4px; padding: 4px 6px; white-space: nowrap; }
+
+/* Etapas */
+.stage { display: grid; gap: 16px; }
+.stage-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.branch { font: 600 14px/1 var(--font-mono); color: #fff; padding: 7px 10px; border-radius: 5px; }
+.b-feature { background: var(--feature); }
+.b-develop { background: var(--develop); }
+.b-homolog { background: var(--homolog); }
+.b-main { background: var(--main); }
+:root[data-theme="dark"] .branch { color: #0e131a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .branch { color: #0e131a; } }
+.trigger { color: var(--muted); font-size: 14px; }
+.trigger code { font-family: var(--font-mono); font-size: 13px; color: var(--fg); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; position: relative; }
+.step { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 14px; position: relative; padding-bottom: 14px; }
+.step:last-child { padding-bottom: 0; }
+.step::before { content: ""; position: absolute; left: 21px; top: 30px; bottom: 0; width: 2px; background: var(--line); }
+.step:last-child::before { display: none; }
+.num { width: 44px; height: 30px; display: grid; place-items: center; font: 600 13px/1 var(--font-mono); border-radius: 6px; background: var(--surface); border: 1.5px solid var(--stage, var(--line)); color: var(--stage, var(--fg)); position: relative; z-index: 1; }
+.body { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.step.gate .body { border-color: var(--gate); border-style: dashed; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.top h3 { font-size: 16px; font-weight: 600; margin: 0; margin-right: auto; }
+.cmd { font: 13px/1.5 var(--font-mono); background: var(--bg); border-radius: 5px; padding: 8px 10px; overflow-x: auto; white-space: pre; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; }
+.cols div { min-width: 0; }
+.cols b { display: block; font: 600 11px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.cols p { margin: 0; max-width: 62ch; }
+.cols ul { margin: 0; padding-left: 18px; }
+.note { font-size: 14px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 12px; max-width: 75ch; margin: 0; }
+
+.s-feature { --stage: var(--feature); }
+.s-develop { --stage: var(--develop); }
+.s-homolog { --stage: var(--homolog); }
+.s-main { --stage: var(--main); }
+
+.rules { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: grid; gap: 12px; }
+.rules ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; max-width: 80ch; }
+
+@media (max-width: 680px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .step { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; }
+  .num { width: 34px; }
+  .step::before { left: 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">ProjetoDevOps-back · proposta de pipeline</div>
+  <h1>Pipeline CI/CD do back-end</h1>
+  <p class="lede">O caminho de uma história do Jira desde a feature branch até produção. Cada etapa diz o que roda, quem bloqueia o merge e qual prática do Martin Fowler ou requisito do projeto (RNF3, RNF4) justifica aquele passo.</p>
+  <div class="stack">
+    <span>Node 20</span><span>TypeScript</span><span>Vitest + Supertest</span><span>TypeORM</span><span>Postgres 16</span><span>GitHub Actions</span><span>Jira SCRUM</span>
+  </div>
+</header>
+
+<section class="map" aria-label="Mapa das branches">
+  <h2>Mapa geral</h2>
+  <div class="map-scroll">
+  <svg viewBox="0 0 1000 230" role="img" aria-label="feature branch para develop para homolog para main, cada passagem por Pull Request com CI; a chave SCRUM liga tudo ao Jira">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/>
+      </marker>
+    </defs>
+
+    <!-- nós -->
+    <rect x="10" y="40" width="170" height="60" rx="8" style="fill: var(--feature)"/>
+    <text x="95" y="66" text-anchor="middle" class="t-mono" style="fill: var(--surface); font-size: 13px; font-weight: 600">SCRUM-23-rf-5-…</text>
+    <text x="95" y="86" text-anchor="middle" style="fill: var(--surface); font-size: 12px">feature branch</text>
+
+    <rect x="280" y="40" width="170" height="60" rx="8" style="fill: var(--develop)"/>
+    <text x="365" y="66" text-anchor="middle" class="t-mono" style="fill: var(--surface); font-size: 15px; font-weight: 600">develop</text>
+    <text x="365" y="86" text-anchor="middle" style="fill: var(--surface); font-size: 12px">mainline (integração)</text>
+
+    <rect x="550" y="40" width="170" height="60" rx="8" style="fill: var(--homolog)"/>
+    <text x="635" y="66" text-anchor="middle" class="t-mono" style="fill: var(--surface); font-size: 15px; font-weight: 600">homolog</text>
+    <text x="635" y="86" text-anchor="middle" style="fill: var(--surface); font-size: 12px">validação</text>
+
+    <rect x="820" y="40" width="170" height="60" rx="8" style="fill: var(--main)"/>
+    <text x="905" y="66" text-anchor="middle" class="t-mono" style="fill: var(--surface); font-size: 15px; font-weight: 600">main</text>
+    <text x="905" y="86" text-anchor="middle" style="fill: var(--surface); font-size: 12px">produção</text>
+
+    <!-- setas -->
+    <line x1="184" y1="70" x2="274" y2="70" style="stroke: var(--muted); stroke-width: 2" marker-end="url(#arr)"/>
+    <text x="229" y="58" text-anchor="middle" style="fill: var(--fg); font-size: 12px; font-weight: 600">PR + CI</text>
+    <text x="229" y="88" text-anchor="middle" style="fill: var(--gate); font-size: 11px">check obrigatório</text>
+
+    <line x1="454" y1="70" x2="544" y2="70" style="stroke: var(--muted); stroke-width: 2" marker-end="url(#arr)"/>
+    <text x="499" y="58" text-anchor="middle" style="fill: var(--fg); font-size: 12px; font-weight: 600">PR + CI</text>
+    <text x="499" y="88" text-anchor="middle" style="fill: var(--gate); font-size: 11px">merge commit</text>
+
+    <line x1="724" y1="70" x2="814" y2="70" style="stroke: var(--muted); stroke-width: 2" marker-end="url(#arr)"/>
+    <text x="769" y="58" text-anchor="middle" style="fill: var(--fg); font-size: 12px; font-weight: 600">PR + CI</text>
+    <text x="769" y="88" text-anchor="middle" style="fill: var(--gate); font-size: 11px">+ aprovação</text>
+
+    <!-- o que acontece depois -->
+    <text x="95" y="124" text-anchor="middle" style="fill: var(--muted); font-size: 12px">commits com a chave</text>
+    <text x="365" y="124" text-anchor="middle" style="fill: var(--muted); font-size: 12px">CI de novo a cada push</text>
+    <text x="635" y="124" text-anchor="middle" style="fill: var(--muted); font-size: 12px">deploy em homologação</text>
+    <text x="905" y="124" text-anchor="middle" style="fill: var(--muted); font-size: 12px">deploy + tag vX.Y.Z</text>
+
+    <!-- trilho do Jira -->
+    <line x1="95" y1="170" x2="905" y2="170" style="stroke: var(--jira); stroke-width: 2; stroke-dasharray: 5 5"/>
+    <line x1="95" y1="100" x2="95" y2="170" style="stroke: var(--jira); stroke-width: 1; stroke-dasharray: 2 4"/>
+    <line x1="365" y1="132" x2="365" y2="170" style="stroke: var(--jira); stroke-width: 1; stroke-dasharray: 2 4"/>
+    <line x1="635" y1="132" x2="635" y2="170" style="stroke: var(--jira); stroke-width: 1; stroke-dasharray: 2 4"/>
+    <line x1="905" y1="132" x2="905" y2="170" style="stroke: var(--jira); stroke-width: 1; stroke-dasharray: 2 4"/>
+    <circle cx="95" cy="170" r="5" style="fill: var(--jira)"/>
+    <circle cx="365" cy="170" r="5" style="fill: var(--jira)"/>
+    <circle cx="635" cy="170" r="5" style="fill: var(--jira)"/>
+    <circle cx="905" cy="170" r="5" style="fill: var(--jira)"/>
+    <text x="500" y="200" text-anchor="middle" style="fill: var(--fg); font-size: 13px; font-weight: 600">Jira · painel Development</text>
+    <text x="500" y="219" text-anchor="middle" style="fill: var(--muted); font-size: 12px">a chave SCRUM-23 aparece na branch, nos commits, nos PRs e nas notas da release</text>
+  </svg>
+  </div>
+  <div class="legend">
+    <span><span class="chip k-ci">CI</span> verifica o código</span>
+    <span><span class="chip k-gate">Regra</span> bloqueia o merge</span>
+    <span><span class="chip k-cd">CD</span> publica</span>
+    <span><span class="chip k-trace">Rastreio</span> liga git, Jira e requisito</span>
+    <span><span class="ref">Fowler #N</span> prática do artigo de CI</span>
+  </div>
+</section>
+
+<!-- 1. FEATURE -->
+<section class="stage s-feature">
+  <div class="stage-head">
+    <span class="branch b-feature">SCRUM-23-rf-5-editar-usuario</span>
+    <h2>1 · Feature branch</h2>
+    <span class="trigger">Gatilho: o dev começa uma história do Jira</span>
+  </div>
+  <ol class="steps">
+    <li class="step">
+      <span class="num">1.1</span>
+      <div class="body">
+        <div class="top"><h3>Criar a branch pela issue do Jira</h3><span class="chip k-trace">Rastreio</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O botão "Create branch" da issue gera o nome com a chave e o requisito: <code>SCRUM-23-rf-5-…</code>.</p></div>
+          <div><b>Por que existe</b><p>A chave liga a branch à issue no painel Development. O <code>rf-5</code> no nome já aponta para o requisito RF5 do README.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">1.2</span>
+      <div class="body">
+        <div class="top"><h3>Commits com a chave na frente</h3><span class="chip k-trace">Rastreio</span></div>
+        <div class="cmd">git commit -m "SCRUM-23 feat: editar usuário com validação"</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Cada commit aparece na issue do Jira. No GitHub, o autolink transforma <code>SCRUM-23</code> em link para a issue.</p></div>
+          <div><b>Por que existe</b><p>Hoje os commits dentro das branches saem sem a chave, por exemplo <code>feat(user): implement…</code>, e somem do rastreio.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">1.3</span>
+      <div class="body">
+        <div class="top"><h3>Branch de vida curta</h3><span class="ref">Fowler #4</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Uma história por branch, aberta e mergeada em 1 ou 2 dias.</p></div>
+          <div><b>Por que existe</b><p>Fowler: integrar pelo menos uma vez por dia. Quanto mais tempo a branch fica separada, mais caro e arriscado fica o merge.</p></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+  <p class="note">Rodar o Actions em todo push da feature branch ajuda, mas para o Fowler isso é "semi-integração": o código ainda não se juntou ao dos colegas. A integração de verdade acontece na etapa 2.</p>
+</section>
+
+<!-- 2. PR -> DEVELOP -->
+<section class="stage s-develop">
+  <div class="stage-head">
+    <span class="branch b-develop">PR → develop</span>
+    <h2>2 · Job <code>ci</code> no Pull Request</h2>
+    <span class="trigger">Gatilho: <code>pull_request</code> para develop, homolog e main</span>
+  </div>
+  <ol class="steps">
+    <li class="step">
+      <span class="num">2.1</span>
+      <div class="body">
+        <div class="top"><h3>Validar o título do PR</h3><span class="chip k-trace">Rastreio</span><span class="chip k-ci">CI</span></div>
+        <div class="cmd">título precisa casar com  ^SCRUM-\d+</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O PR fica vermelho se o título não começar com a chave do Jira.</p></div>
+          <div><b>Por que existe</b><p>Os PRs #3 e #4 entraram com o commit <code>feat(tests): …</code> e SCRUM-15 e SCRUM-16 perderam o vínculo com o código.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">2.2</span>
+      <div class="body">
+        <div class="top"><h3>Instalar dependências</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #1 #2</span></div>
+        <div class="cmd">actions/setup-node (Node 20, cache npm)
+npm ci</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Uma máquina limpa instala exatamente as versões do <code>package-lock.json</code>.</p></div>
+          <div><b>Por que existe</b><p>Prova que o projeto sobe só com o que está no repo. Acaba o "na minha máquina funciona".</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">2.3</span>
+      <div class="body">
+        <div class="top"><h3>Checagem de tipos</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #7</span></div>
+        <div class="cmd">npm run typecheck
+npm run typecheck:test</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O TypeScript valida o código e os testes sem gerar arquivos.</p></div>
+          <div><b>Por que existe</b><p>É o passo mais barato e falha em segundos. Rodar o rápido primeiro mantém o build bem abaixo dos 10 minutos que o Fowler recomenda.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">2.4</span>
+      <div class="body">
+        <div class="top"><h3>Subir Postgres 16 e rodar as migrations</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #9</span></div>
+        <div class="cmd">services: postgres:16-alpine
+npm run migration:run</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O Actions sobe o mesmo Postgres do <code>docker-compose.yml</code> e aplica as migrations do TypeORM.</p></div>
+          <div><b>Por que existe</b><p>Os testes atuais usam repositórios em memória. Nada verifica SQL e migrations num banco real. Fowler: testar num clone de produção.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">2.5</span>
+      <div class="body">
+        <div class="top"><h3>Rodar os testes</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #3</span><span class="ref">RNF3</span></div>
+        <div class="cmd">npm test        # vitest run: unit + HTTP com supertest</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Roda os testes de casos de uso (<code>UpdateUserUseCase.test.ts</code>…) e de rota (<code>updateUser.http.test.ts</code>…).</p></div>
+          <div><b>Por que existe</b><p>Um build que se testa sozinho. É o RNF3: verificar automaticamente que tudo funciona antes de publicar.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">2.6</span>
+      <div class="body">
+        <div class="top"><h3>Compilar</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #2</span></div>
+        <div class="cmd">npm run build   # tsc → dist/</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Gera o <code>dist/</code> que o <code>npm start</code> executa.</p></div>
+          <div><b>Por que existe</b><p>Garante que o artefato que vai para produção compila, e não só os testes.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step gate">
+      <span class="num">2.7</span>
+      <div class="body">
+        <div class="top"><h3>Regra da branch develop</h3><span class="chip k-gate">Regra</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b>
+            <ul>
+              <li>Só entra por PR, sem push direto nem force-push</li>
+              <li>O check <code>ci</code> precisa estar verde</li>
+              <li>A branch precisa estar atualizada com a develop</li>
+              <li>Squash usando o <b style="display:inline;font:inherit;text-transform:none;letter-spacing:0;color:inherit">título do PR</b> como mensagem</li>
+            </ul>
+          </div>
+          <div><b>Por que existe</b><p>Um CI que dá para ignorar não protege nada. "Atualizada" faz o teste rodar no código já integrado. O squash com o título do PR garante a chave SCRUM no commit final.</p></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- 3. DEVELOP -->
+<section class="stage s-develop">
+  <div class="stage-head">
+    <span class="branch b-develop">develop</span>
+    <h2>3 · Depois do merge na develop</h2>
+    <span class="trigger">Gatilho: <code>push</code> na develop</span>
+  </div>
+  <ol class="steps">
+    <li class="step">
+      <span class="num">3.1</span>
+      <div class="body">
+        <div class="top"><h3>CI roda de novo na mainline</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #5</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O mesmo job <code>ci</code> roda no commit que acabou de entrar na develop.</p></div>
+          <div><b>Por que existe</b><p>Dois PRs verdes podem quebrar quando entram juntos. Para o Fowler, a integração só termina quando o build da mainline passa.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step gate">
+      <span class="num">3.2</span>
+      <div class="body">
+        <div class="top"><h3>Develop vermelha: revert primeiro</h3><span class="chip k-gate">Regra</span><span class="ref">Fowler #6</span></div>
+        <div class="cmd">git revert &lt;sha&gt;   # via PR "SCRUM-23 revert: …"</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Quem quebrou desfaz o commit e investiga depois, numa nova branch.</p></div>
+          <div><b>Por que existe</b><p>"Ninguém tem tarefa mais prioritária do que consertar o build." Isso é combinado do time: o Actions não faz sozinho.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">3.3</span>
+      <div class="body">
+        <div class="top"><h3>Status visível para todos</h3><span class="chip k-ci">CI</span><span class="ref">Fowler #10</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Badge do workflow no README e o check no PR. No Jira, a issue mostra o PR como merged.</p></div>
+          <div><b>Por que existe</b><p>Todo mundo precisa saber na hora se a mainline está saudável antes de puxar ou abrir um PR.</p></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- 4. HOMOLOG -->
+<section class="stage s-homolog">
+  <div class="stage-head">
+    <span class="branch b-homolog">develop → homolog</span>
+    <h2>4 · Homologação</h2>
+    <span class="trigger">Gatilho: PR develop → homolog, depois <code>push</code> na homolog</span>
+  </div>
+  <ol class="steps">
+    <li class="step">
+      <span class="num">4.1</span>
+      <div class="body">
+        <div class="top"><h3>CI no PR de promoção</h3><span class="chip k-ci">CI</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O job <code>ci</code> roda sobre o conjunto de histórias que está sendo promovido.</p></div>
+          <div><b>Por que existe</b><p>Confere o pacote inteiro antes de ele sair da develop.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step gate">
+      <span class="num">4.2</span>
+      <div class="body">
+        <div class="top"><h3>Merge commit, nunca rebase</h3><span class="chip k-gate">Regra</span><span class="chip k-trace">Rastreio</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>A homolog recebe os mesmos commits da develop, com o mesmo SHA.</p></div>
+          <div><b>Por que existe</b><p>Hoje o rebase cria SHAs novos: SCRUM-23 é <code>cdc4034</code>, <code>96a3379</code> e <code>43b488c</code>. Com o merge commit, um SHA vale nas três branches.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">4.3</span>
+      <div class="body">
+        <div class="top"><h3>Deploy em homologação</h3><span class="chip k-cd">CD</span><span class="ref">Fowler #9 #11</span><span class="ref">RNF4</span></div>
+        <div class="cmd">build da imagem → migration:run → subir a API (destino a definir)</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>A versão da homolog é publicada automaticamente num ambiente igual ao de produção.</p></div>
+          <div><b>Por que existe</b><p>O time e o cliente validam as histórias num ambiente real. O deploy por script evita passo manual e erro humano.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">4.4</span>
+      <div class="body">
+        <div class="top"><h3>Smoke test na API publicada</h3><span class="chip k-cd">CD</span></div>
+        <div class="cmd">GET /api/stations  → espera 200</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>Uma chamada simples confirma que a API subiu e fala com o banco.</p></div>
+          <div><b>Por que existe</b><p>Pega erro de configuração do ambiente (variável faltando, banco fora) logo após o deploy.</p></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- 5. MAIN -->
+<section class="stage s-main">
+  <div class="stage-head">
+    <span class="branch b-main">homolog → main</span>
+    <h2>5 · Produção</h2>
+    <span class="trigger">Gatilho: PR homolog → main, depois <code>push</code> na main</span>
+  </div>
+  <ol class="steps">
+    <li class="step gate">
+      <span class="num">5.1</span>
+      <div class="body">
+        <div class="top"><h3>CI + aprovação de uma pessoa</h3><span class="chip k-ci">CI</span><span class="chip k-gate">Regra</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O PR só é liberado com o check verde e a aprovação de quem validou a homologação.</p></div>
+          <div><b>Por que existe</b><p>Fowler: com a mainline sempre pronta, liberar para produção vira uma decisão de negócio. Também evita outro caso como o PR #1, que entrou direto na main.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">5.2</span>
+      <div class="body">
+        <div class="top"><h3>Deploy em produção</h3><span class="chip k-cd">CD</span><span class="ref">Fowler #11</span><span class="ref">RNF4</span></div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>O mesmo script da homologação publica a versão da main.</p></div>
+          <div><b>Por que existe</b><p>RNF4: toda atualização é publicada automaticamente e o cliente sempre usa a versão mais recente.</p></div>
+        </div>
+      </div>
+    </li>
+    <li class="step">
+      <span class="num">5.3</span>
+      <div class="body">
+        <div class="top"><h3>Tag e release com as chaves</h3><span class="chip k-cd">CD</span><span class="chip k-trace">Rastreio</span></div>
+        <div class="cmd">v0.2.0
+- SCRUM-22 cadastrar usuário (RF5)
+- SCRUM-23 editar usuário (RF5)</div>
+        <div class="cols">
+          <div><b>O que acontece</b><p>A versão do <code>package.json</code> vira uma tag. As notas da release listam as chaves, que o autolink já transforma em links para o Jira.</p></div>
+          <div><b>Por que existe</b><p>Responde "em qual versão o SCRUM-23 foi para produção?". O Fowler indica tags como forma de marcar a maturidade do código.</p></div>
+        </div>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<section class="rules">
+  <h2>O que o Actions não garante sozinho</h2>
+  <ul>
+    <li>Branches pequenas, de uma história só, mergeadas em 1 ou 2 dias.</li>
+    <li>Develop vermelha é prioridade do time inteiro: revert primeiro, investigar depois.</li>
+    <li>Toda branch, commit e PR começa com a chave <code>SCRUM-NN</code>.</li>
+    <li>Promoções entre develop, homolog e main sempre por merge commit.</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

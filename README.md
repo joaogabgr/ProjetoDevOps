@@ -43,15 +43,15 @@ Geração de Alertas: Implementaremos um sistema de notificações automáticas 
 
 | Número | Descrição |
 |--------|-----------|
-| RF1 | Permitir o registro de estações meteorológicas com sensores variados, adaptando-se a diferentes tipos de medições. |
-| RF2 | Permitir o cadastro, edição, visualização e remoção de estações meteorológicas. |
-| RF3 | Permitir o cadastro, edição, visualização e remoção dos parâmetros meteorológicos. |
-| RF4 | Permitir o cadastro, edição, visualização e remoção dos alertas de condições críticas. |
-| RF5 | Permitir o cadastro, edição, visualização e remoção de usuários com diferentes permissões. |
-| RF6 | Receber e armazenar dados enviados em tempo real pelas estações meteorológicas. |
-| RF7 | Apresentar os dados coletados por meio de painéis gráficos interativos. |
-| RF8 | Gerar alertas automaticamente com base em condições climáticas específicas. |
-| RF9 | Controlar os níveis de acesso ao sistema, permitindo que administradores tenham acesso completo, funcionários tenham acesso às funcionalidades operacionais, e usuários públicos visualizem apenas informações liberadas. |
+| <a id="rf1"></a>RF1 | Permitir o registro de estações meteorológicas com sensores variados, adaptando-se a diferentes tipos de medições. |
+| <a id="rf2"></a>RF2 | Permitir o cadastro, edição, visualização e remoção de estações meteorológicas. |
+| <a id="rf3"></a>RF3 | Permitir o cadastro, edição, visualização e remoção dos parâmetros meteorológicos. |
+| <a id="rf4"></a>RF4 | Permitir o cadastro, edição, visualização e remoção dos alertas de condições críticas. |
+| <a id="rf5"></a>RF5 | Permitir o cadastro, edição, visualização e remoção de usuários com diferentes permissões. |
+| <a id="rf6"></a>RF6 | Receber e armazenar dados enviados em tempo real pelas estações meteorológicas. |
+| <a id="rf7"></a>RF7 | Apresentar os dados coletados por meio de painéis gráficos interativos. |
+| <a id="rf8"></a>RF8 | Gerar alertas automaticamente com base em condições climáticas específicas. |
+| <a id="rf9"></a>RF9 | Controlar os níveis de acesso ao sistema, permitindo que administradores tenham acesso completo, funcionários tenham acesso às funcionalidades operacionais, e usuários públicos visualizem apenas informações liberadas. |
 
 
 <br>
