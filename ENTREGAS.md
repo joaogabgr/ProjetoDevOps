@@ -2,7 +2,7 @@
 
 Situação de cada requisito do projeto. Esta página é gerada automaticamente a partir do Jira e das releases do front e do back: não edite à mão.
 
-**Atualizado em:** 19/10/2026, 08:09 · **Histórias entregues:** 0 de 31
+**Atualizado em:** 19/10/2026, 08:24 · **Histórias entregues:** 0 de 31
 
 | Requisito | Situação | Histórias entregues | Versões |
 |---|---|---|---|
