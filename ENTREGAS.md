@@ -2,13 +2,13 @@
 
 Situação de cada requisito do projeto. Esta página é gerada automaticamente a partir do Jira e das releases do front e do back: não edite à mão.
 
-**Atualizado em:** 19/10/2026, 08:24 · **Histórias entregues:** 0 de 31
+**Atualizado em:** 20/10/2026, 12:30 · **Histórias entregues:** 0 de 31
 
 | Requisito | Situação | Histórias entregues | Versões |
 |---|---|---|---|
 | [RF1 – Sensores configuráveis por estação](README.md#rf1) | 🔧 Em desenvolvimento | 0 de 1 | – |
 | [RF2 – Cadastro de estações](README.md#rf2) | 🔧 Em desenvolvimento | 0 de 3 | – |
-| [RF3 – Cadastro de parâmetros (tipos de medida)](README.md#rf3) | ⏳ Planejado | 0 de 4 | – |
+| [RF3 – Cadastro de parâmetros (tipos de medida)](README.md#rf3) | 🔧 Em desenvolvimento | 0 de 4 | – |
 | [RF4 – Cadastro de regras de alerta](README.md#rf4) | ⏳ Planejado | 0 de 4 | – |
 | [RF5 – Cadastro de usuários e senha](README.md#rf5) | 🔧 Em desenvolvimento | 0 de 6 | – |
 | [RF6 – Recepção das leituras via MQTT](README.md#rf6) | ⏳ Planejado | 0 de 3 | – |
@@ -36,9 +36,9 @@ Situação de cada requisito do projeto. Esta página é gerada automaticamente 
 
 ### RF3 – Cadastro de parâmetros (tipos de medida)
 
-- ⏳ Cadastrar parâmetro ([SCRUM-18](https://projetodevops.atlassian.net/browse/SCRUM-18)): Planejado (Sprint 1)
+- 🔧 Cadastrar parâmetro ([SCRUM-18](https://projetodevops.atlassian.net/browse/SCRUM-18)): Em desenvolvimento (Sprint 1)
 - ⏳ Editar parâmetro ([SCRUM-19](https://projetodevops.atlassian.net/browse/SCRUM-19)): Planejado (Sprint 1)
-- ⏳ Listar parâmetros ([SCRUM-20](https://projetodevops.atlassian.net/browse/SCRUM-20)): Planejado (Sprint 1)
+- 🔧 Listar parâmetros ([SCRUM-20](https://projetodevops.atlassian.net/browse/SCRUM-20)): Em desenvolvimento (Sprint 1)
 - ⏳ Excluir parâmetro ([SCRUM-21](https://projetodevops.atlassian.net/browse/SCRUM-21)): Planejado (Sprint 1)
 
 ### RF4 – Cadastro de regras de alerta
@@ -52,8 +52,8 @@ Situação de cada requisito do projeto. Esta página é gerada automaticamente 
 
 - 📦 Cadastrar usuário ([SCRUM-22](https://projetodevops.atlassian.net/browse/SCRUM-22)): Pronto, aguardando publicação
 - 📦 Editar usuário ([SCRUM-23](https://projetodevops.atlassian.net/browse/SCRUM-23)): Pronto, aguardando publicação
-- ⏳ Listar usuários ([SCRUM-24](https://projetodevops.atlassian.net/browse/SCRUM-24)): Planejado (Sprint 1)
-- ⏳ Desativar ou excluir usuário ([SCRUM-25](https://projetodevops.atlassian.net/browse/SCRUM-25)): Planejado (Sprint 1)
+- 🔧 Listar usuários ([SCRUM-24](https://projetodevops.atlassian.net/browse/SCRUM-24)): Em desenvolvimento (Sprint 1)
+- 🔧 Desativar ou excluir usuário ([SCRUM-25](https://projetodevops.atlassian.net/browse/SCRUM-25)): Em desenvolvimento (Sprint 1)
 - ⏳ Alterar senha ([SCRUM-41](https://projetodevops.atlassian.net/browse/SCRUM-41)): Planejado (Sprint 3)
 - ⏳ Recuperar senha ([SCRUM-42](https://projetodevops.atlassian.net/browse/SCRUM-42)): Planejado (Sprint 3)
 
