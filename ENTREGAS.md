@@ -2,19 +2,19 @@
 
 Situação de cada requisito do projeto. Esta página é gerada automaticamente a partir do Jira e das releases do front e do back: não edite à mão.
 
-**Atualizado em:** 25/10/2026, 11:43 · **Histórias entregues:** 0 de 31
+**Atualizado em:** 26/10/2026, 07:37 · **Histórias entregues:** 11 de 31
 
 | Requisito | Situação | Histórias entregues | Versões |
 |---|---|---|---|
-| [RF1 – Sensores configuráveis por estação](README.md#rf1) | 🔧 Em desenvolvimento | 0 de 1 | – |
-| [RF2 – Cadastro de estações](README.md#rf2) | 🔧 Em desenvolvimento | 0 de 3 | – |
-| [RF3 – Cadastro de parâmetros (tipos de medida)](README.md#rf3) | 🔧 Em desenvolvimento | 0 de 4 | – |
+| [RF1 – Sensores configuráveis por estação](README.md#rf1) | ✅ Entregue | 1 de 1 | [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0) |
+| [RF2 – Cadastro de estações](README.md#rf2) | ✅ Entregue | 3 de 3 | [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0) |
+| [RF3 – Cadastro de parâmetros (tipos de medida)](README.md#rf3) | 🟡 Parcial | 2 de 4 | [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0) |
 | [RF4 – Cadastro de regras de alerta](README.md#rf4) | ⏳ Planejado | 0 de 4 | – |
-| [RF5 – Cadastro de usuários e senha](README.md#rf5) | 🔧 Em desenvolvimento | 0 de 6 | – |
+| [RF5 – Cadastro de usuários e senha](README.md#rf5) | 🟡 Parcial | 4 de 6 | [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0) |
 | [RF6 – Recepção das leituras via MQTT](README.md#rf6) | ⏳ Planejado | 0 de 3 | – |
 | [RF7 – Painéis com gráficos por estação](README.md#rf7) | ⏳ Planejado | 0 de 3 | – |
 | [RF8 – Disparo de alertas por e-mail](README.md#rf8) | ⏳ Planejado | 0 de 1 | – |
-| [RF9 – Controle de acesso por perfil](README.md#rf9) | ⏳ Planejado | 0 de 1 | – |
+| [RF9 – Controle de acesso por perfil](README.md#rf9) | ✅ Entregue | 1 de 1 | [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0) |
 | [RF10 – Status de comunicação e manutenção da estação](README.md#rf10) | ⏳ Planejado | 0 de 2 | – |
 | [RF11 – Painel público](README.md#rf11) | ⏳ Planejado | 0 de 1 | – |
 | [RF12 – Relatório mensal em PDF](README.md#rf12) | ⏳ Planejado | 0 de 1 | – |
@@ -26,19 +26,19 @@ Situação de cada requisito do projeto. Esta página é gerada automaticamente 
 
 ### RF1 – Sensores configuráveis por estação
 
-- 📦 Modelo de dados dinâmico e cadastro de estações ([SCRUM-14](https://projetodevops.atlassian.net/browse/SCRUM-14)): Pronto, aguardando publicação
+- ✅ Modelo de dados dinâmico e cadastro de estações ([SCRUM-14](https://projetodevops.atlassian.net/browse/SCRUM-14)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 
 ### RF2 – Cadastro de estações
 
-- 📦 Editar estação meteorológica ([SCRUM-15](https://projetodevops.atlassian.net/browse/SCRUM-15)): Pronto, aguardando publicação
-- 📦 Listar estações cadastradas ([SCRUM-16](https://projetodevops.atlassian.net/browse/SCRUM-16)): Pronto, aguardando publicação
-- 📦 Excluir estação meteorológica ([SCRUM-17](https://projetodevops.atlassian.net/browse/SCRUM-17)): Pronto, aguardando publicação
+- ✅ Editar estação meteorológica ([SCRUM-15](https://projetodevops.atlassian.net/browse/SCRUM-15)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
+- ✅ Listar estações cadastradas ([SCRUM-16](https://projetodevops.atlassian.net/browse/SCRUM-16)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
+- ✅ Excluir estação meteorológica ([SCRUM-17](https://projetodevops.atlassian.net/browse/SCRUM-17)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 
 ### RF3 – Cadastro de parâmetros (tipos de medida)
 
-- 🔧 Cadastrar parâmetro ([SCRUM-18](https://projetodevops.atlassian.net/browse/SCRUM-18)): Em desenvolvimento (Sprint 1)
+- ✅ Cadastrar parâmetro ([SCRUM-18](https://projetodevops.atlassian.net/browse/SCRUM-18)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 - ⏳ Editar parâmetro ([SCRUM-19](https://projetodevops.atlassian.net/browse/SCRUM-19)): Planejado (Sprint 1)
-- 🔧 Listar parâmetros ([SCRUM-20](https://projetodevops.atlassian.net/browse/SCRUM-20)): Em desenvolvimento (Sprint 1)
+- ✅ Listar parâmetros ([SCRUM-20](https://projetodevops.atlassian.net/browse/SCRUM-20)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 - ⏳ Excluir parâmetro ([SCRUM-21](https://projetodevops.atlassian.net/browse/SCRUM-21)): Planejado (Sprint 1)
 
 ### RF4 – Cadastro de regras de alerta
@@ -50,10 +50,10 @@ Situação de cada requisito do projeto. Esta página é gerada automaticamente 
 
 ### RF5 – Cadastro de usuários e senha
 
-- 📦 Cadastrar usuário ([SCRUM-22](https://projetodevops.atlassian.net/browse/SCRUM-22)): Pronto, aguardando publicação
-- 📦 Editar usuário ([SCRUM-23](https://projetodevops.atlassian.net/browse/SCRUM-23)): Pronto, aguardando publicação
-- 🔧 Listar usuários ([SCRUM-24](https://projetodevops.atlassian.net/browse/SCRUM-24)): Em desenvolvimento (Sprint 1)
-- 🔧 Desativar ou excluir usuário ([SCRUM-25](https://projetodevops.atlassian.net/browse/SCRUM-25)): Em desenvolvimento (Sprint 1)
+- ✅ Cadastrar usuário ([SCRUM-22](https://projetodevops.atlassian.net/browse/SCRUM-22)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
+- ✅ Editar usuário ([SCRUM-23](https://projetodevops.atlassian.net/browse/SCRUM-23)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
+- ✅ Listar usuários ([SCRUM-24](https://projetodevops.atlassian.net/browse/SCRUM-24)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
+- ✅ Desativar ou excluir usuário ([SCRUM-25](https://projetodevops.atlassian.net/browse/SCRUM-25)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 - ⏳ Alterar senha ([SCRUM-41](https://projetodevops.atlassian.net/browse/SCRUM-41)): Planejado (Sprint 3)
 - ⏳ Recuperar senha ([SCRUM-42](https://projetodevops.atlassian.net/browse/SCRUM-42)): Planejado (Sprint 3)
 
@@ -75,7 +75,7 @@ Situação de cada requisito do projeto. Esta página é gerada automaticamente 
 
 ### RF9 – Controle de acesso por perfil
 
-- ⏳ Controle de acesso por perfil ([SCRUM-26](https://projetodevops.atlassian.net/browse/SCRUM-26)): Planejado (Sprint 1)
+- ✅ Controle de acesso por perfil ([SCRUM-26](https://projetodevops.atlassian.net/browse/SCRUM-26)): Entregue em [back v0.1.0](https://github.com/joaogabgr/ProjetoDevOps-back/releases/tag/v0.1.0)
 
 ### RF10 – Status de comunicação e manutenção da estação
 
