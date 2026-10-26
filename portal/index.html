@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entregas – Vigia das Águas</title>
+<meta name="description" content="Situação de cada requisito e história do sistema Vigia das Águas, atualizada a partir do Jira e das releases.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: cabeçalho → visão geral (régua + números) → sprints → filtros fixos → lista por requisito ou tabela */
+:root {
+  --bg: #eef4f5;
+  --surface: #ffffff;
+  --sunken: #e3edef;
+  --fg: #0f2a33;
+  --muted: #557079;
+  --line: #d2e0e3;
+  --accent: #0b6b83;
+  --accent-ink: #ffffff;
+  --done: #1b7a4b;
+  --partial: #b26a00;
+  --ready: #2b62b8;
+  --wip: #7647b2;
+  --todo: #8597a0;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b1a20; --surface: #11252d; --sunken: #0d1f26; --fg: #e3eef1; --muted: #93abb3; --line: #1f3a44;
+    --accent: #4fb6d1; --accent-ink: #062029;
+    --done: #4cc58a; --partial: #e6a540; --ready: #6d9ff0; --wip: #b18cec; --todo: #7d939b;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 120px; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--font-body); }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 16px; }
+.mono { font-family: var(--font-mono); font-size: .86em; }
+.muted { color: var(--muted); }
+
+/* Cabeçalho */
+header.top { background: var(--accent); color: var(--accent-ink); padding-block: 36px 88px; position: relative; overflow: hidden; }
+header.top::after { /* linha d'água */
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 48px; background: var(--bg);
+  clip-path: path("M0 30 C 160 6, 320 52, 480 28 S 800 4, 960 26 S 1280 50, 1600 22 S 1920 6, 2400 30 L 2400 60 L 0 60 Z");
+}
+.eyebrow { font: 700 12px/1 var(--font-body); letter-spacing: .12em; text-transform: uppercase; opacity: .85; }
+h1 { font: 800 clamp(30px, 5vw, 48px)/1.05 var(--font-display); margin: 10px 0 12px; text-wrap: balance; }
+.lede { max-width: 62ch; margin: 0; opacity: .92; }
+.toplinks { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; font-size: 14px; }
+.toplinks a { color: inherit; text-underline-offset: 3px; }
+
+main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 0 64px; margin-top: -56px; position: relative; }
+main > * { min-width: 0; }
+h2 { font: 600 20px/1.2 var(--font-display); margin: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+
+/* Visão geral */
+.overview { padding: 22px; display: grid; gap: 18px; }
+.overview-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; }
+.big { font: 800 clamp(34px, 6vw, 52px)/1 var(--font-display); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.kpi { all: unset; cursor: pointer; display: grid; gap: 2px; padding: 12px 14px; border-radius: 8px; background: var(--sunken); border: 1px solid transparent; }
+.kpi:hover { border-color: var(--line); }
+.kpi[aria-pressed="true"] { border-color: currentColor; }
+.kpi strong { font: 800 26px/1 var(--font-display); }
+.kpi span { font-size: 13px; color: var(--muted); }
+.kpi:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* Régua: barra empilhada por situação, com marcas a cada 10% */
+.gauge { position: relative; display: flex; height: 16px; border-radius: 4px; overflow: hidden; background: var(--sunken); }
+.gauge.thin { height: 8px; }
+.gauge span { height: 100%; }
+.gauge::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), color-mix(in srgb, var(--bg) 70%, transparent) calc(10% - 1px) 10%); }
+.s-done { background: var(--done); } .s-partial { background: var(--partial); } .s-ready { background: var(--ready); }
+.s-wip { background: var(--wip); } .s-todo { background: var(--todo); }
+.c-done { color: var(--done); } .c-partial { color: var(--partial); } .c-ready { color: var(--ready); }
+.c-wip { color: var(--wip); } .c-todo { color: var(--todo); }
+
+/* Sprints */
+.sprints { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.sprint { all: unset; cursor: pointer; display: grid; gap: 8px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.sprint:hover { border-color: var(--muted); }
+.sprint[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.sprint:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sprint-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sprint-name { font: 600 16px/1.2 var(--font-display); }
+.tag { font: 700 11px/1 var(--font-body); letter-spacing: .06em; text-transform: uppercase; padding: 4px 7px; border-radius: 4px; background: var(--sunken); color: var(--muted); white-space: nowrap; }
+.tag.active { background: var(--accent); color: var(--accent-ink); }
+
+/* Filtros */
+.filters { position: sticky; top: 0; z-index: 5; padding: 12px 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(6px); }
+.filters .card { padding: 12px; display: grid; gap: 10px; }
+.filter-row { display: grid; grid-template-columns: minmax(200px, 2fr) repeat(5, minmax(120px, 1fr)); gap: 8px; }
+.field { display: grid; gap: 3px; min-width: 0; }
+.field label { font-size: 12px; color: var(--muted); }
+input, select { font: inherit; font-size: 15px; color: var(--fg); background: var(--sunken); border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; width: 100%; min-width: 0; }
+.filter-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.seg button { font: inherit; font-size: 14px; border: 0; background: var(--surface); color: var(--fg); padding: 6px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.linkbtn { font: inherit; font-size: 14px; background: none; border: 0; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 4px; }
+.linkbtn[hidden] { display: none; }
+
+/* Requisitos */
+.req { padding: 18px 20px; display: grid; gap: 12px; }
+.req-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; }
+.rf { font: 600 13px/1 var(--font-mono); background: var(--fg); color: var(--bg); padding: 6px 8px; border-radius: 5px; }
+.req-title { font: 600 18px/1.25 var(--font-display); margin: 0; text-wrap: balance; }
+.req-meta { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 14px; }
+.badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; white-space: nowrap; }
+.badge::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.stories { list-style: none; margin: 0; padding: 0; display: grid; }
+.story { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; gap: 4px 14px; padding: 10px 0; border-top: 1px solid var(--line); align-items: start; }
+.story .key { padding-top: 2px; }
+.story-title { font-weight: 700; }
+.story-meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13px; color: var(--muted); }
+.story-side { display: grid; justify-items: end; gap: 6px; }
+.subs { display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+.sub { font: 500 11px/1 var(--font-mono); padding: 4px 6px; border-radius: 4px; background: var(--sunken); color: var(--muted); text-decoration: none; white-space: nowrap; }
+.sub.ok { color: var(--done); }
+
+/* Tabela */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; min-width: 860px; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); white-space: nowrap; }
+th button { all: unset; cursor: pointer; }
+th button:focus-visible { outline: 2px solid var(--accent); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+td:first-child, td.mono { white-space: nowrap; }
+
+.empty { padding: 32px; text-align: center; color: var(--muted); }
+footer { font-size: 13px; color: var(--muted); padding-bottom: 32px; }
+
+@media (max-width: 860px) {
+  .filter-row { grid-template-columns: 1fr 1fr; }
+  .filter-row .field:first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .story { grid-template-columns: 1fr; }
+  .story-side { justify-items: start; }
+  .subs { justify-content: flex-start; }
+  .req-head { grid-template-columns: auto 1fr; }
+  .req-head > .badge { grid-column: 1 / -1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gauge span { transition: width .4s ease; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">Instituto Vigia das Águas · Portal de entregas</div>
+    <h1>O que já foi entregue</h1>
+    <p class="lede">Situação de cada requisito do sistema de monitoramento e prevenção de enchentes. Uma história conta como entregue quando foi publicada numa versão e as partes de back e de front estão concluídas.</p>
+    <div class="toplinks">
+      <a href="https://github.com/joaogabgr/ProjetoDevOps/blob/main/docs/requisitos/README.md">Requisitos</a>
+      <a href="https://github.com/joaogabgr/ProjetoDevOps-back/releases">Releases do back</a>
+      <a href="https://github.com/joaogabgr/ProjetoDevOps-front/releases">Releases do front</a>
+      <a href="https://github.com/joaogabgr/ProjetoDevOps/blob/main/docs/processo-po.md">Como trabalhamos</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card overview" aria-labelledby="ov-title">
+    <div class="overview-head">
+      <h2 id="ov-title">Visão geral</h2>
+      <span class="muted" id="updated">Carregando…</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px">
+      <span class="big" id="pct">–</span>
+      <span id="pct-text" class="muted">das histórias entregues</span>
+    </div>
+    <div class="gauge" id="gauge" role="img" aria-label="Distribuição das histórias por situação"></div>
+    <div class="kpis" id="kpis"></div>
+  </section>
+
+  <section aria-labelledby="sp-title" style="display:grid;gap:12px">
+    <h2 id="sp-title">Sprints</h2>
+    <div class="sprints" id="sprints"></div>
+  </section>
+
+  <div class="filters">
+    <div class="card" role="search">
+      <div class="filter-row">
+        <div class="field">
+          <label for="f-q">Buscar</label>
+          <input id="f-q" type="search" placeholder="Título ou chave, ex.: alerta, SCRUM-34" autocomplete="off">
+        </div>
+        <div class="field"><label for="f-rf">Requisito</label><select id="f-rf"></select></div>
+        <div class="field"><label for="f-st">Situação</label><select id="f-st"></select></div>
+        <div class="field"><label for="f-sp">Sprint</label><select id="f-sp"></select></div>
+        <div class="field"><label for="f-cam">Pendência</label><select id="f-cam"></select></div>
+        <div class="field"><label for="f-v">Versão</label><select id="f-v"></select></div>
+      </div>
+      <div class="filter-foot">
+        <span id="count" aria-live="polite"></span>
+        <span style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="linkbtn" id="clear" hidden>Limpar filtros</button>
+          <span class="seg" role="group" aria-label="Visualização">
+            <button id="v-req" aria-pressed="true">Por requisito</button>
+            <button id="v-tab" aria-pressed="false">Tabela</button>
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <section id="results" aria-live="polite"></section>
+
+  <footer>Gerado automaticamente a partir do Jira (projeto SCRUM) e das releases do GitHub. As chaves SCRUM-NN abrem a atividade no Jira, que exige acesso ao projeto.</footer>
+</main>
+
+<script>
+const STATES = {
+  done: { label: 'Entregue', hint: 'Publicada numa versão, back e front concluídos' },
+  partial: { label: 'Entrega parcial', hint: 'Parte publicada; faltam subtarefas' },
+  ready: { label: 'Pronto para publicar', hint: 'Concluída, aguardando a próxima versão' },
+  wip: { label: 'Em desenvolvimento', hint: 'Em andamento na sprint' },
+  todo: { label: 'Planejado', hint: 'Ainda não iniciada' },
+};
+const ORDER = ['done', 'partial', 'ready', 'wip', 'todo'];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const fmtDate = (iso) => (iso ? new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '');
+const pct = (n, t) => (t ? Math.round((n / t) * 100) : 0);
+
+let DATA = null;
+const filters = { q: '', rf: '', st: '', sp: '', cam: '', v: '', view: 'req', sort: 'key', dir: 1 };
+
+function readHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  for (const k of Object.keys(filters)) if (p.has(k)) filters[k] = k === 'dir' ? Number(p.get(k)) : p.get(k);
+}
+function writeHash() {
+  const p = new URLSearchParams();
+  for (const [k, v] of Object.entries(filters)) {
+    if (k === 'view' && v === 'req') continue;
+    if (k === 'sort' && v === 'key') continue;
+    if (k === 'dir' && v === 1) continue;
+    if (v) p.set(k, v);
+  }
+  const h = p.toString();
+  history.replaceState(null, '', h ? `#${h}` : location.pathname);
+}
+
+function gaugeHtml(counts, total) {
+  return ORDER.filter((s) => counts[s]).map((s) =>
+    `<span class="s-${s}" style="width:${(counts[s] / total) * 100}%" title="${STATES[s].label}: ${counts[s]}"></span>`).join('');
+}
+function countStates(list) {
+  const c = Object.fromEntries(ORDER.map((s) => [s, 0]));
+  for (const s of list) c[s.state]++;
+  return c;
+}
+
+function matches(s) {
+  if (filters.q) {
+    const q = norm(filters.q);
+    const hay = norm(`${s.key} ${s.title} ${s.rf} ${s.subtasks.map((t) => t.key + ' ' + t.title).join(' ')}`);
+    if (!q.split(/\s+/).every((w) => hay.includes(w))) return false;
+  }
+  if (filters.rf && s.rf !== filters.rf) return false;
+  if (filters.st && s.state !== filters.st) return false;
+  if (filters.sp && (s.sprint ?? '__none') !== filters.sp) return false;
+  if (filters.v && !s.versions.includes(filters.v)) return false;
+  if (filters.cam) {
+    const pend = (layer) => s.subtasks.some((t) => t.layer === layer && !t.done);
+    if (filters.cam === 'BACK' && !pend('BACK')) return false;
+    if (filters.cam === 'FRONT' && !pend('FRONT')) return false;
+    if (filters.cam === 'none' && s.subtasks.some((t) => !t.done)) return false;
+  }
+  return true;
+}
+
+function subsHtml(s) {
+  return s.subtasks.map((t) =>
+    `<a class="sub ${t.done ? 'ok' : ''}" href="${DATA.jira}${t.key}" title="${esc(t.key)} · ${esc(t.title)} · ${esc(t.status)}">${t.layer === 'OUTRA' ? 'TAREFA' : t.layer} ${t.done ? '✓' : '…'}</a>`).join('');
+}
+function versionsHtml(names) {
+  return names.map((n) => {
+    const v = DATA.versions.find((x) => x.name === n);
+    return v?.url ? `<a href="${esc(v.url)}">${esc(n)}</a>` : esc(n);
+  }).join(', ');
+}
+function badge(state) {
+  return `<span class="badge c-${state}" title="${esc(STATES[state].hint)}">${STATES[state].label}</span>`;
+}
+
+function renderOverview() {
+  const all = DATA.stories;
+  const c = countStates(all);
+  $('pct').textContent = `${pct(c.done, all.length)}%`;
+  $('pct-text').textContent = `das histórias entregues · ${c.done} de ${all.length}`;
+  $('gauge').innerHTML = gaugeHtml(c, all.length);
+  const pts = all.reduce((n, s) => n + (s.points ?? 0), 0);
+  const ptsDone = all.filter((s) => s.state === 'done').reduce((n, s) => n + (s.points ?? 0), 0);
+  $('kpis').innerHTML = ORDER.map((s) =>
+    `<button class="kpi c-${s}" data-st="${s}" aria-pressed="${filters.st === s}" title="Filtrar: ${STATES[s].label}"><strong>${c[s]}</strong><span>${STATES[s].label}</span></button>`).join('') +
+    `<div class="kpi" style="cursor:default"><strong>${ptsDone}<span style="font-size:15px;color:var(--muted)"> / ${pts}</span></strong><span>Pontos entregues</span></div>`;
+  $('kpis').querySelectorAll('button[data-st]').forEach((b) => b.addEventListener('click', () => {
+    filters.st = filters.st === b.dataset.st ? '' : b.dataset.st;
+    $('f-st').value = filters.st;
+    update();
+  }));
+  const d = new Date(DATA.updatedAt);
+  $('updated').textContent = `Atualizado em ${d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}`;
+}
+
+function renderSprints() {
+  const label = { active: 'Ativa', future: 'Futura', closed: 'Encerrada' };
+  $('sprints').innerHTML = DATA.sprints.map((sp) => {
+    const list = DATA.stories.filter((s) => s.sprint === sp.name);
+    const c = countStates(list);
+    const pts = list.reduce((n, s) => n + (s.points ?? 0), 0);
+    return `<button class="sprint" data-sp="${esc(sp.name)}" aria-pressed="${filters.sp === sp.name}">
+      <span class="sprint-top"><span class="sprint-name">${esc(sp.name)}</span><span class="tag ${sp.state === 'active' ? 'active' : ''}">${label[sp.state] ?? esc(sp.state)}</span></span>
+      <span class="muted" style="font-size:13px">${fmtDate(sp.start)}${sp.end ? ' a ' + fmtDate(sp.end) : ''} · ${list.length} histórias · ${pts} pts</span>
+      <span class="gauge thin">${gaugeHtml(c, list.length || 1)}</span>
+      <span style="font-size:13px">${c.done} entregues${c.partial ? ` · ${c.partial} parciais` : ''}${c.wip ? ` · ${c.wip} em desenvolvimento` : ''}</span>
+    </button>`;
+  }).join('');
+  $('sprints').querySelectorAll('.sprint').forEach((b) => b.addEventListener('click', () => {
+    filters.sp = filters.sp === b.dataset.sp ? '' : b.dataset.sp;
+    $('f-sp').value = filters.sp;
+    update();
+  }));
+}
+
+function fillSelects() {
+  const opt = (v, t) => `<option value="${esc(v)}">${esc(t)}</option>`;
+  $('f-rf').innerHTML = opt('', 'Todos') + DATA.requirements.map((r) => opt(r.rf, `${r.rf} – ${r.title}`)).join('');
+  $('f-st').innerHTML = opt('', 'Todas') + ORDER.map((s) => opt(s, STATES[s].label)).join('');
+  const hasNoSprint = DATA.stories.some((s) => !s.sprint);
+  $('f-sp').innerHTML = opt('', 'Todas') + DATA.sprints.map((s) => opt(s.name, s.name)).join('') + (hasNoSprint ? opt('__none', 'Sem sprint') : '');
+  $('f-cam').innerHTML = opt('', 'Qualquer') + opt('BACK', 'Back pendente') + opt('FRONT', 'Front pendente') + opt('none', 'Nada pendente');
+  $('f-v').innerHTML = opt('', 'Todas') + DATA.versions.map((v) => opt(v.name, v.name)).join('');
+}
+
+function renderByRequirement(list) {
+  const html = DATA.requirements.map((r) => {
+    const all = DATA.stories.filter((s) => s.rf === r.rf);
+    const shown = list.filter((s) => s.rf === r.rf);
+    if (!shown.length) return '';
+    const c = countStates(all);
+    let st = 'todo';
+    if (all.length && c.done === all.length) st = 'done';
+    else if (c.done || c.partial) st = 'partial';
+    else if (c.wip || c.ready) st = 'wip';
+    return `<article class="card req" id="${esc(r.rf.toLowerCase())}">
+      <div class="req-head">
+        <span class="rf">${esc(r.rf)}</span>
+        <h3 class="req-title">${esc(r.title)}</h3>
+        ${badge(st)}
+        <div class="req-meta muted">
+          <span>${c.done} de ${all.length} histórias entregues</span>
+          ${r.doc ? `<a href="${esc(r.doc)}">Ver requisito</a>` : ''}
+          ${shown.length < all.length ? `<span>${shown.length} exibidas pelo filtro</span>` : ''}
+        </div>
+      </div>
+      <div class="gauge thin" role="img" aria-label="${c.done} de ${all.length} entregues">${gaugeHtml(c, all.length || 1)}</div>
+      <ul class="stories">${shown.map((s) => `<li class="story">
+        <a class="key mono" href="${DATA.jira}${s.key}">${s.key}</a>
+        <div>
+          <div class="story-title">${esc(s.title)}</div>
+          <div class="story-meta">
+            <span>${esc(s.sprint ?? 'Sem sprint')}</span>
+            ${s.points != null ? `<span>${s.points} pts</span>` : ''}
+            ${s.versions.length ? `<span>Versão ${versionsHtml(s.versions)}</span>` : ''}
+          </div>
+        </div>
+        <div class="story-side">${badge(s.state)}<div class="subs">${subsHtml(s)}</div></div>
+      </li>`).join('')}</ul>
+    </article>`;
+  }).join('');
+  return `<div style="display:grid;gap:14px">${html}</div>`;
+}
+
+function renderTable(list) {
+  const layer = (s, l) => {
+    const t = s.subtasks.filter((x) => x.layer === l);
+    if (!t.length) return '<span class="muted">–</span>';
+    const done = t.filter((x) => x.done).length;
+    return `<span class="${done === t.length ? 'c-done' : ''}">${done}/${t.length}</span>`;
+  };
+  const sorters = {
+    key: (s) => Number(s.key.split('-')[1]),
+    title: (s) => norm(s.title),
+    rf: (s) => Number(s.rf.slice(2)),
+    state: (s) => ORDER.indexOf(s.state),
+    sprint: (s) => s.sprint ?? 'zzz',
+    points: (s) => s.points ?? -1,
+  };
+  const key = sorters[filters.sort] ? filters.sort : 'key';
+  const sorted = [...list].sort((a, b) => {
+    const x = sorters[key](a), y = sorters[key](b);
+    return (x > y ? 1 : x < y ? -1 : 0) * filters.dir;
+  });
+  const th = (k, t) => `<th aria-sort="${filters.sort === k ? (filters.dir === 1 ? 'ascending' : 'descending') : 'none'}"><button data-sort="${k}">${t}${filters.sort === k ? (filters.dir === 1 ? ' ↑' : ' ↓') : ''}</button></th>`;
+  return `<div class="card table-wrap"><table>
+    <thead><tr>${th('key', 'Chave')}${th('title', 'História')}${th('rf', 'Requisito')}${th('state', 'Situação')}${th('sprint', 'Sprint')}${th('points', 'Pts')}<th>Versão</th><th>Back</th><th>Front</th></tr></thead>
+    <tbody>${sorted.map((s) => `<tr>
+      <td><a class="mono" href="${DATA.jira}${s.key}">${s.key}</a></td>
+      <td>${esc(s.title)}</td>
+      <td class="mono">${esc(s.rf)}</td>
+      <td>${badge(s.state)}</td>
+      <td>${esc(s.sprint ?? '–')}</td>
+      <td class="num">${s.points ?? '–'}</td>
+      <td>${versionsHtml(s.versions) || '<span class="muted">–</span>'}</td>
+      <td>${layer(s, 'BACK')}</td>
+      <td>${layer(s, 'FRONT')}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function update() {
+  writeHash();
+  const list = DATA.stories.filter(matches);
+  const active = ['q', 'rf', 'st', 'sp', 'cam', 'v'].some((k) => filters[k]);
+  $('clear').hidden = !active;
+  $('count').textContent = `${list.length} de ${DATA.stories.length} histórias${active ? ' com os filtros atuais' : ''}`;
+  $('v-req').setAttribute('aria-pressed', filters.view !== 'table');
+  $('v-tab').setAttribute('aria-pressed', filters.view === 'table');
+  document.querySelectorAll('.kpi[data-st]').forEach((b) => b.setAttribute('aria-pressed', filters.st === b.dataset.st));
+  document.querySelectorAll('.sprint').forEach((b) => b.setAttribute('aria-pressed', filters.sp === b.dataset.sp));
+
+  if (!list.length) {
+    $('results').innerHTML = `<div class="card empty">Nenhuma história encontrada com esses filtros. <button class="linkbtn" onclick="clearFilters()">Limpar filtros</button></div>`;
+    return;
+  }
+  $('results').innerHTML = filters.view === 'table' ? renderTable(list) : renderByRequirement(list);
+  $('results').querySelectorAll('th button[data-sort]').forEach((b) => b.addEventListener('click', () => {
+    if (filters.sort === b.dataset.sort) filters.dir *= -1;
+    else { filters.sort = b.dataset.sort; filters.dir = 1; }
+    update();
+  }));
+}
+
+function clearFilters() {
+  Object.assign(filters, { q: '', rf: '', st: '', sp: '', cam: '', v: '' });
+  for (const k of ['q', 'rf', 'st', 'sp', 'cam', 'v']) $(`f-${k}`).value = '';
+  update();
+}
+
+async function start() {
+  try {
+    const res = await fetch('data.json', { cache: 'no-store' });
+    DATA = await res.json();
+  } catch {
+    $('results').innerHTML = '<div class="card empty">Não foi possível carregar os dados. Recarregue a página em alguns instantes.</div>';
+    $('updated').textContent = '';
+    return;
+  }
+  readHash();
+  fillSelects();
+  for (const k of ['q', 'rf', 'st', 'sp', 'cam', 'v']) {
+    const el = $(`f-${k}`);
+    el.value = filters[k];
+    el.addEventListener(k === 'q' ? 'input' : 'change', () => { filters[k] = el.value; update(); });
+  }
+  $('clear').addEventListener('click', clearFilters);
+  $('v-req').addEventListener('click', () => { filters.view = 'req'; update(); });
+  $('v-tab').addEventListener('click', () => { filters.view = 'table'; update(); });
+  renderOverview();
+  renderSprints();
+  update();
+}
+start();
+</script>
+</body>
+</html>
