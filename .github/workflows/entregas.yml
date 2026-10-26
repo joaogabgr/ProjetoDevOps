@@ -9,6 +9,7 @@ on:
     branches: [main]
     paths:
       - 'docs/requisitos/**'
+      - 'portal/**'
       - '.github/scripts/entregas.mjs'
       - '.github/workflows/entregas.yml'
   workflow_dispatch:
