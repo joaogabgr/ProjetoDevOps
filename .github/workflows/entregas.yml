@@ -1,6 +1,6 @@
 name: Entregas
 
-# Gera o portal de entregas a partir do Jira e publica no GitHub Pages.
+# Gera o portal de entregas a partir do Jira e do Confluence e publica no GitHub Pages.
 # Nada é commitado no repositório.
 on:
   schedule:
@@ -8,7 +8,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docs/requisitos/**'
       - 'portal/**'
       - '.github/scripts/entregas.mjs'
       - '.github/workflows/entregas.yml'

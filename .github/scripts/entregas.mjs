@@ -4,12 +4,14 @@
 // Uma história conta como entregue quando foi publicada numa versão (fixVersion, marcada
 // pelo workflow de release) e todas as subtarefas estão concluídas (história em Concluído).
 //
+// O link "Ver requisito" aponta para a página do requisito no Confluence (rótulo "requisito"
+// no espaço CONFLUENCE_SPACE).
+//
 // Variáveis: JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, OUTPUT_DIR (padrão _site)
-import { copyFileSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const { JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY = 'SCRUM', OUTPUT_DIR = '_site' } = process.env;
-const DOCS = 'https://github.com/joaogabgr/ProjetoDevOps/blob/main/docs/requisitos';
+const { JIRA_BASE_URL, JIRA_EMAIL, JIRA_API_TOKEN, JIRA_PROJECT_KEY = 'SCRUM', CONFLUENCE_SPACE = 'VIGIA', OUTPUT_DIR = '_site' } = process.env;
 
 async function jira(path, body) {
   const res = await fetch(JIRA_BASE_URL + path, {
@@ -40,15 +42,20 @@ async function searchAll(jql, fields) {
 const rfNumber = (s) => Number(s.match(/^RF(\d+)/)?.[1] ?? 999);
 const issueNumber = (k) => Number(k.split('-')[1]);
 
-// Arquivo de cada requisito em docs/requisitos (RF06-... → RF6).
-const reqFiles = new Map(
-  readdirSync('docs/requisitos')
-    .map((f) => [f.match(/^RF(\d+)-/)?.[1], f])
-    .filter(([n]) => n)
-    .map(([n, f]) => [`RF${Number(n)}`, `${DOCS}/${f}`]),
-);
+// Página de cada requisito no Confluence (título "RF06 – ..." → RF6).
+async function requirementPages() {
+  const cql = encodeURIComponent(`space = "${CONFLUENCE_SPACE}" AND label = "requisito" AND type = page`);
+  const { results } = await jira(`/wiki/rest/api/content/search?cql=${cql}&limit=200`);
+  return new Map(
+    results
+      .map((p) => [p.title.match(/^RF(\d+) /)?.[1], p])
+      .filter(([n]) => n)
+      .map(([n, p]) => [`RF${Number(n)}`, `${JIRA_BASE_URL}/wiki/spaces/${CONFLUENCE_SPACE}/pages/${p.id}`]),
+  );
+}
 
 async function main() {
+  const reqPages = await requirementPages();
   const jiraVersions = await jira(`/rest/api/3/project/${JIRA_PROJECT_KEY}/versions`);
   const epics = await searchAll(`project = ${JIRA_PROJECT_KEY} AND issuetype = Epic AND summary ~ "RF*"`, ['summary']);
   const epicByKey = new Map(epics.map((e) => [e.key, e]));
@@ -101,7 +108,7 @@ async function main() {
   const requirements = epics
     .map((e) => {
       const rf = e.fields.summary.match(/^RF\d+/)?.[0] ?? '';
-      return { rf, title: e.fields.summary.replace(/^RF\d+\s*-\s*/, ''), epic: e.key, doc: reqFiles.get(rf) ?? null };
+      return { rf, title: e.fields.summary.replace(/^RF\d+\s*-\s*/, ''), epic: e.key, doc: reqPages.get(rf) ?? null };
     })
     .sort((a, b) => rfNumber(a.rf) - rfNumber(b.rf));
 
