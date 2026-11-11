@@ -2,7 +2,7 @@
 // de portal/ para a pasta de saída. O workflow entregas.yml publica essa pasta no GitHub Pages.
 //
 // Uma história conta como entregue quando foi publicada numa versão (fixVersion, marcada
-// pelo workflow de release) e todas as subtarefas estão concluídas (história em Concluído).
+// pelo workflow de release) e todas as tarefas ligadas a ela estão concluídas (história em Concluído).
 //
 // O link "Ver requisito" aponta para a página do requisito no Confluence (rótulo "requisito"
 // no espaço CONFLUENCE_SPACE).
@@ -60,11 +60,15 @@ async function main() {
   const epics = await searchAll(`project = ${JIRA_PROJECT_KEY} AND issuetype = Epic AND summary ~ "RF*"`, ['summary']);
   const epicByKey = new Map(epics.map((e) => [e.key, e]));
   const issues = await searchAll(`project = ${JIRA_PROJECT_KEY} AND parent is not EMPTY`, [
-    'summary', 'parent', 'status', 'fixVersions', 'customfield_10020', 'customfield_10016', 'issuetype',
+    'summary', 'parent', 'status', 'fixVersions', 'customfield_10020', 'customfield_10016', 'issuetype', 'issuelinks',
   ]);
 
-  const stories = issues.filter((i) => epicByKey.has(i.fields.parent?.key));
-  const storyKeys = new Set(stories.map((s) => s.key));
+  const inEpic = issues.filter((i) => epicByKey.has(i.fields.parent?.key));
+  const stories = inEpic.filter((i) => i.fields.issuetype.name === 'História');
+  // Tarefas [BACK]/[FRONT] são filhas do épico e ligadas à história por "faz parte de" (link Composição).
+  const tasks = inEpic.filter((i) => i.fields.issuetype.name === 'Tarefa');
+  const storyOf = (task) =>
+    task.fields.issuelinks.find((l) => l.type.name === 'Composição' && l.outwardIssue)?.outwardIssue.key;
   const sprints = new Map();
 
   const storyData = stories.map((s) => {
@@ -81,8 +85,8 @@ async function main() {
     const sprint = (f.customfield_10020 ?? []).at(-1);
     if (sprint) sprints.set(sprint.id, { id: sprint.id, name: sprint.name, state: sprint.state, start: sprint.startDate ?? null, end: sprint.endDate ?? null });
 
-    const subtasks = issues
-      .filter((i) => i.fields.parent?.key === s.key && !storyKeys.has(i.key))
+    const subtasks = tasks
+      .filter((t) => storyOf(t) === s.key)
       .sort((a, b) => issueNumber(a.key) - issueNumber(b.key))
       .map((st) => ({
         key: st.key,
