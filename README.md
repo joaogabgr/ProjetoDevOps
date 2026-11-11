@@ -12,7 +12,8 @@ Este repositório junta o front e o back como submódulos e publica o portal de 
 | Requisitos funcionais e não funcionais | [Confluence › Requisitos](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/557078) |
 | Atas das reuniões com o cliente | [Confluence › Reuniões](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/589825) |
 | Processo do PO, DoR, DoD e padrões de branch e commit | [Confluence › Processo do PO](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/524289) |
-| Modelo de dados e pipeline de CI/CD | [Confluence › Arquitetura](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/491764) |
+| Pipeline de CI/CD: branches, jobs de cada ambiente e regras | [Confluence › Pipeline de CI/CD](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/491764) |
+| Modelo de dados | [Confluence › Modelo de dados](https://projetodevops.atlassian.net/wiki/spaces/VIGIA/pages/720910) |
 | Backlog, sprints e histórias | [Jira – projeto SCRUM](https://projetodevops.atlassian.net/jira/software/projects/SCRUM/boards/1) |
 | O que já foi entregue | [Portal de entregas](https://joaogabgr.github.io/ProjetoDevOps/) |
 | Notas de cada versão | Releases do [back](https://github.com/joaogabgr/ProjetoDevOps-back/releases) e do [front](https://github.com/joaogabgr/ProjetoDevOps-front/releases) |
